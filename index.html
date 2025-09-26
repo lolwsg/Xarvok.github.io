@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xarvok's Website</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 600px;
+        }
+        h1 { font-size: 3em; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .ssl-badge {
+            background: #28a745;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .feature {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-left: 4px solid #fff;
+        }
+        button {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        button:hover { 
+            background: #ff5252; 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        #info { margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Xarvok's Site</h1>
+        <div class="ssl-badge">🔒 HTTPS Secured</div>
+        
+        <div class="feature">
+            <h3>✨ Secure Connection</h3>
+            <p>This website is served over HTTPS with automatic SSL!</p>
+        </div>
+        
+        <div class="feature">
+            <h3>⚡ Fast Loading</h3>
+            <p>Powered by GitHub's global CDN network</p>
+        </div>
+        
+        <div class="feature">
+            <h3>🌟 Modern Design</h3>
+            <p>Responsive and mobile-friendly interface</p>
+        </div>
+        
+        <button onclick="showInfo()">Show Connection Info</button>
+        <button onclick="testLoad()">Test Load Speed</button>
+        
+        <div id="info"></div>
+        
+        <script>
+            function showInfo() {
+                const info = document.getElementById('info');
+                info.innerHTML = `
+                    <h4>🔍 Connection Details:</h4>
+                    <p><strong>Protocol:</strong> ${location.protocol}</p>
+                    <p><strong>Host:</strong> ${location.host}</p>
+                    <p><strong>Secure:</strong> ${location.protocol === 'https:' ? '✅ Yes' : '❌ No'}</p>
+                    <p><strong>User Agent:</strong> ${navigator.userAgent.substring(0, 50)}...</p>
+                    <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+                `;
+            }
+            
+            function testLoad() {
+                const start = performance.now();
+                fetch(location.href)
+                    .then(() => {
+                        const loadTime = (performance.now() - start).toFixed(2);
+                        document.getElementById('info').innerHTML = `
+                            <h4>⚡ Performance Test:</h4>
+                            <p><strong>Load Time:</strong> ${loadTime}ms</p>
+                            <p><strong>Status:</strong> ${loadTime < 100 ? '🚀 Excellent' : loadTime < 500 ? '✅ Good' : '⚠️ Slow'}</p>
+                        `;
+                    });
+            }
+            
+            // Show SSL status on load
+            console.log('🔒 HTTPS Status:', location.protocol === 'https:');
+        </script>
+    </div>
+</body>
+</html>
